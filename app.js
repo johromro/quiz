@@ -27,6 +27,21 @@ app.use(session());
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
+ //Mecanismo de autologout
+ app.use(function(req,res,next){
+    if(req.session.user){
+      if(req.session.user.iniSession){
+        if(((new Date()).getTime() - (new Date(req.session.user.iniSession)))>120000){
+          delete req.session.user;
+          next();
+          return;
+        }
+      }
+      req.session.user.iniSession= new Date();
+        }
+        next();
+});
+
 // Helpers dinamicos:
 app.use(function(req, res, next) {
 
